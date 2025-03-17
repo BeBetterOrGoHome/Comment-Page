@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Chat</title>
+    <style>
+        body {
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: blue;
+            margin: 0;
+            padding: 20px;
+        }
+        #chatbox {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        #message-input {
+            display: flex;
+            margin-top: 10px;
+        }
+        #message {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #send-button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: blue;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Anonymous Chat Room</h1>
+<div id="chatbox"></div>
+<div id="message-input">
+    <input type="text" id="message" placeholder="Type your message here..." />
+    <button id="send-button">Send</button>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js"></script>
+
+<script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDZ7dONZgIFUATowtDAg6wuK5gbwPARg7A",
+        authDomain: "comment-page-5387c.firebaseapp.com",
+        databaseURL: "https://comment-page-5387c-default-rtdb.firebaseio.com",
+        projectId: "comment-page-5387c",
+        storageBucket: "comment-page-5387c.firebasestorage.app",
+        messagingSenderId: "1051442010870",
+        appId: "1:1051442010870:web:dbbc96d1b5b4fd2eb9ead7",
+        measurementId: "G-K3WM2G6YLG"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    const chatbox = document.getElementById('chatbox');
+    const messageInput = document.getElementById('message');
+    const sendButton = document.getElementById('send-button');
+
+    // Reference to the messages in the Firebase database
+    const messagesRef = database.ref('messages');
+
+    // Load new messages and display them in the chatbox
+    messagesRef.on('child_added', (snapshot) => {
+        const message = snapshot.val();
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        chatbox.appendChild(messageElement);
+        chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+    });
+
+    // Send a new message
+    sendButton.addEventListener('click', () => {
+        const message = messageInput.value.trim();
+        if (message) {
+            messagesRef.push(message); // Add the message to the database
+            messageInput.value = ''; // Clear input field
+        }
+    });
+
+    // Send message on pressing Enter
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendButton.click();
+        }
+    });
+</script>
+
+</body>
+</html>
